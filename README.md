@@ -119,7 +119,7 @@ To mathematically protect our ₹6.45 Crore monthly payout pool, we deploy a rut
 
 ### Attack Vector 2: GPS Teleportation & Spoofing Apps
 - **The Attack:** An individual authentic rider uses a location-spoofing app to simulate overlapping with a heavy-rain dark store grid while physically remaining at home.
-- **Defense (Geographic Anomaly Engine):** The GPS velocity checker measures milliseconds between lat/long streaming updates over Kafka. If a rider updates from Zone A to Zone B requiring a velocity of >120km/h (Teleportation jump), the validation fails. We securely cross-validate this via cell-tower triangulation bounds (±500m logic). The spoofed location is thrown out by the Isolation Forest.
+- **Defense (Geographic Anomaly Engine):** The GPS displacement checker measures milliseconds between lat/long streaming updates over Kafka. Unlike traditional architectures that only catch very long-distance jumps (e.g., Kolkata to Delhi jump), our system detects minute jumps. If a rider updates from Zone A to Zone B with a maximum jump distance of >1 km in an unrealistic timeframe, the validation fails. We securely cross-validate this via cell-tower triangulation bounds (±50m logic). The spoofed location is thrown out by the Isolation Forest.
 
 ### Attack Vector 3: Fake Weather API Injection
 - **The Attack:** A bad actor attempts to perform Man-In-The-Middle (MITM) attacks or directly injects fake rainfall payloads to trigger the smart contract artificially.
@@ -177,7 +177,7 @@ Our environmental triggers map perfectly to Q-Commerce pain points where atmosph
 ### 4. 🌊 Flooding Trigger `FLOODING`
 - **Why Q-Commerce:** Flooding blocks dark store access roads. A 2-km hyper-local zone can become completely gridlocked by one flooded arterial road.
 - **Condition:** Zone flagged waterlogged/flood-affected | 2+ source confirmation | GPS overlap ≥ 60%.
-- **Data Sources:** Municipal API/SMS alert (primary) + Twitter crowd signals / historical flood-zone overlays (secondary).
+- **Data Sources:** NDTV and other recent news channels APIs (primary) + Twitter crowd signals / historical flood-zone overlays (secondary).
 
 | Flood Severity | Multiplier | Base Payout (Per Day) |
 |---|---|---|
@@ -251,7 +251,7 @@ All claims must pass strict two-factor parametric gates:
 
 **Smart Exception Logic:**
 ```javascript
-IF (All zone workers show zero activity) AND (Municipal alert issued) AND (Blinkit dispatch volume = 0)
+IF (All zone workers show zero activity) AND (NDTV/News alert issued) AND (Blinkit dispatch volume = 0)
 THEN approve_payout() even if worker is inactive. 
 // If the platform itself stopped dispatching, rider inactivity is logically pardoned.
 ```
